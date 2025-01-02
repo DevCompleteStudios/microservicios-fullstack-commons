@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 
-public class CommonServiceImpl<E, R extends CrudRepository<E, Long> > implements CommonService<E>{
+public abstract class CommonServiceImpl<E, R extends CrudRepository<E, Long> > implements CommonService<E>{
 
     @Autowired
     protected R repository;
