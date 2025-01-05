@@ -1,9 +1,13 @@
 package com.devstudios.microservicios.app.commons.controllers;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,8 +45,18 @@ public abstract class CommonController<E, S extends CommonService<E>> {
     }
 
     @PostMapping()
-    public ResponseEntity<?> create( @RequestBody E entity ){
+    public ResponseEntity<?> create( @Validated @RequestBody E entity, BindingResult result ){
+        if( result.hasErrors() ) return validar(result);
         return ResponseEntity.ok(service.save(entity));
     }
 
+
+    protected ResponseEntity<?> validar( BindingResult response ){
+        Map<String, Object> res = new HashMap<>();
+
+        response.getFieldErrors()
+            .forEach(e -> res.put(e.getField(), e.getDefaultMessage()));
+
+        return ResponseEntity.badRequest().body(res);
+    }
 }
